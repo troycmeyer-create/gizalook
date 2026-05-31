@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gizalook — Plans in your pocket. Always current. Always clear.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:    #0C0C0C;
+  --white:    #F4EFE5;
+  --yellow:   #F5C534;
+  --orange:   #E64D0A;
+  --concrete: #B8B0A0;
+  --card:     #181818;
+  --mid:      #242424;
+  --muted:    #666;
+  --border:   #2A2A2A;
+
+  /* UI rules — sizes applied everywhere */
+  --text-body:     18px;
+  --text-btn:      20px;
+  --text-step:     22px;
+  --text-critical: 24px;
+  --text-header:   32px;
+  --btn-height:    64px;
+  --btn-radius:    16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Barlow', sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── NAV ──────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 40px;
+  background: rgba(12,12,12,0.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px; letter-spacing: 3px;
+  color: var(--yellow);
+}
+.logo span { color: var(--white); }
+.nav-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--btn-height);
+  min-width: 200px;
+  padding: 0 28px;
+  background: var(--yellow);
+  color: var(--black);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: var(--text-btn);
+  text-decoration: none;
+  border-radius: var(--btn-radius);
+  transition: background .2s, transform .15s;
+}
+.nav-cta:hover { background: #ffd040; transform: translateY(-1px); }
+
+/* ─── TICKER ───────────────────────────────────── */
+.ticker-wrap {
+  background: var(--yellow); overflow: hidden;
+  padding: 10px 0; white-space: nowrap;
+}
+.ticker-inner {
+  display: inline-block;
+  animation: ticker 20s linear infinite;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 16px; letter-spacing: 3px;
+  color: var(--black); text-transform: uppercase;
+}
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ─── HERO ─────────────────────────────────────── */
+.hero {
+  min-height: 90vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 40px 64px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 45% at 75% 35%, rgba(245,197,52,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 20px;
+}
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(70px, 10.5vw, 148px);
+  line-height: .92; letter-spacing: 2px;
+  max-width: 880px; margin-bottom: 28px;
+}
+h1 em { font-style: normal; color: var(--yellow); }
+.hero-sub {
+  font-size: 20px; color: var(--concrete);
+  max-width: 560px; margin-bottom: 44px; line-height: 1.6;
+}
+.cta-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--btn-height); min-width: 240px; padding: 0 36px;
+  background: var(--yellow); color: var(--black);
+  font-weight: 700; font-size: var(--text-btn);
+  text-decoration: none; border-radius: var(--btn-radius);
+  transition: background .2s, transform .15s;
+}
+.btn-primary:hover { background: #ffd040; transform: translateY(-2px); }
+.btn-ghost {
+  color: var(--white); font-size: 17px; font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1.5px solid #555; padding-bottom: 2px;
+  transition: border-color .2s, color .2s;
+}
+.btn-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
+
+/* Hero stat strip */
+.stat-strip {
+  display: flex; gap: 56px; flex-wrap: wrap;
+  margin-top: 72px; padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.stat-item {}
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px; color: var(--yellow); line-height: 1;
+}
+.stat-desc { font-size: 14px; color: var(--muted); margin-top: 5px; }
+.stat-source {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: #444; margin-top: 3px;
+  letter-spacing: .5px;
+}
+
+/* ─── SECTIONS ─────────────────────────────────── */
+section { padding: 96px 40px; }
+.sec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 14px;
+}
+h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(44px, 6vw, 76px);
+  line-height: 1.0; letter-spacing: 1px; margin-bottom: 20px;
+}
+.lead {
+  font-size: 20px; color: var(--concrete);
+  max-width: 600px; line-height: 1.65; margin-bottom: 0;
+}
+
+/* ─── DATA BAR ─────────────────────────────────── */
+.data-bar {
+  background: var(--mid);
+  display: flex; flex-wrap: wrap;
+}
+.data-cell {
+  flex: 1; min-width: 220px;
+  padding: 40px 36px;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.data-cell:last-child { border-right: none; }
+.data-cell::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--yellow);
+}
+.data-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px; color: var(--yellow); line-height: 1;
+  margin-bottom: 8px;
+}
+.data-label {
+  font-size: 17px; font-weight: 600; color: var(--white);
+  margin-bottom: 8px;
+}
+.data-detail { font-size: 14px; color: var(--muted); line-height: 1.55; }
+.data-cite {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: #444; margin-top: 12px; letter-spacing: .5px;
+}
+.data-cite a { color: #555; text-decoration: none; }
+.data-cite a:hover { color: var(--yellow); }
+
+/* ─── PROBLEM ──────────────────────────────────── */
+.problem { background: var(--card); }
+.prob-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px; margin-top: 52px;
+}
+.prob-item {
+  background: #111; padding: 36px 32px;
+  border-left: 3px solid transparent;
+  transition: border-color .2s;
+}
+.prob-item:hover { border-left-color: var(--yellow); }
+.prob-icon { font-size: 26px; margin-bottom: 16px; }
+.prob-item h3 {
+  font-size: var(--text-header); font-weight: 700;
+  margin-bottom: 10px; line-height: 1.2;
+}
+.prob-item p { font-size: 16px; color: var(--muted); line-height: 1.65; }
+
+/* ─── THREE STORIES ────────────────────────────── */
+.stories { background: var(--black); }
+.story-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; margin-top: 52px;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+.story-card {
+  background: var(--black); padding: 44px 36px;
+  position: relative;
+}
+.story-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 4px; background: var(--orange);
+}
+.story-cost {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 60px; color: var(--orange); line-height: 1;
+  margin-bottom: 6px;
+}
+.story-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 22px;
+}
+.story-what {
+  font-size: 19px; font-weight: 700; color: var(--white);
+  line-height: 1.3; margin-bottom: 14px;
+}
+.story-detail { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+.story-fix {
+  background: rgba(245,197,52,.07);
+  border: 1px solid rgba(245,197,52,.18);
+  border-radius: 12px; padding: 18px 20px;
+}
+.story-fix-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 8px;
+}
+.story-fix p { font-size: 14px; color: var(--concrete); line-height: 1.6; }
+
+.roi-block {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 24px;
+  margin-top: 40px; padding: 36px 40px;
+  background: rgba(245,197,52,.05);
+  border: 1px solid rgba(245,197,52,.15);
+  border-radius: 12px;
+}
+.roi-text { font-size: 19px; font-weight: 700; color: var(--white); }
+.roi-text em { color: var(--yellow); font-style: normal; }
+.roi-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+/* ─── REAL DATA SECTION ────────────────────────── */
+.real-data { background: #0A0A0A; }
+.data-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+  gap: 20px; margin-top: 52px;
+}
+.data-card {
+  background: var(--card); border-radius: 10px;
+  padding: 32px 28px;
+  border-top: 3px solid var(--yellow);
+}
+.data-card-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 56px; color: var(--yellow); line-height: 1;
+  margin-bottom: 10px;
+}
+.data-card-label {
+  font-size: 17px; font-weight: 700; margin-bottom: 10px;
+}
+.data-card-detail {
+  font-size: 15px; color: var(--muted); line-height: 1.65; margin-bottom: 14px;
+}
+.data-card-source {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: #444; letter-spacing: .5px;
+}
+.data-card-source a { color: #555; text-decoration: none; }
+.data-card-source a:hover { color: var(--yellow); }
+
+/* ─── HOW IT WORKS ─────────────────────────────── */
+.how { background: var(--mid); }
+.steps-row {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 2px; margin-top: 52px;
+  counter-reset: step;
+}
+.step {
+  background: #1E1E1E; padding: 44px 36px;
+  position: relative; counter-increment: step;
+}
+.step::after {
+  content: '0' counter(step);
+  font-family: 'Bebas Neue', sans-serif; font-size: 90px;
+  color: rgba(245,197,52,.06);
+  position: absolute; top: 16px; right: 20px; line-height: 1;
+}
+.step-icon {
+  width: 52px; height: 52px;
+  background: rgba(245,197,52,.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 22px;
+}
+.step h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px; letter-spacing: 1px; color: var(--yellow);
+  margin-bottom: 12px;
+}
+.step p { font-size: 16px; color: var(--muted); line-height: 1.7; }
+
+/* Phone mockup callouts for onboarding flow */
+.onboarding-flow {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 56px;
+}
+.flow-step {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px;
+  flex: 1; min-width: 160px;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.flow-num {
+  background: var(--yellow); color: var(--black);
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.flow-text { font-size: 15px; color: var(--concrete); line-height: 1.5; }
+.flow-text strong { display: block; color: var(--white); font-size: 16px; margin-bottom: 4px; }
+
+/* ─── EXPERIENCE LEVELS ─────────────────────────── */
+.levels { background: var(--black); }
+.levels-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 2px; margin-top: 52px;
+}
+.level-card { background: var(--card); padding: 32px 24px; }
+.level-badge {
+  display: inline-block;
+  background: rgba(245,197,52,.08);
+  border: 1px solid rgba(245,197,52,.22);
+  color: var(--yellow);
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px; margin-bottom: 16px;
+}
+.level-card h3 {
+  font-size: 20px; font-weight: 700; margin-bottom: 10px;
+}
+.level-card p { font-size: 15px; color: var(--muted); line-height: 1.65; }
+
+/* ─── PRICING ───────────────────────────────────── */
+.pricing { background: #0A0A0A; }
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 20px; margin-top: 52px; max-width: 1000px;
+}
+.pricing-card {
+  background: var(--card); border-radius: 12px; padding: 40px 32px;
+  border: 1.5px solid var(--border);
+  position: relative; transition: border-color .2s;
+}
+.pricing-card:hover { border-color: #444; }
+.pricing-card.featured { border-color: var(--yellow); background: #191700; }
+.featured-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--yellow); color: var(--black);
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 16px; border-radius: 20px; white-space: nowrap;
+}
+.plan-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px; letter-spacing: 1px; margin-bottom: 14px;
+}
+.plan-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 64px; line-height: 1; color: var(--yellow);
+}
+.plan-price sup { font-size: 24px; vertical-align: top; margin-top: 8px; }
+.plan-price sub { font-size: 20px; }
+.plan-note { font-size: 13px; color: var(--muted); margin: 8px 0 28px; }
+.plan-features { list-style: none; margin-bottom: 36px; }
+.plan-features li {
+  font-size: 15px; color: var(--concrete);
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.plan-features li::before { content: '✓'; color: var(--yellow); font-weight: 700; flex-shrink: 0; }
+.plan-features li.off::before { content: '–'; color: #333; }
+.plan-features li.off { color: #444; }
+.btn-plan {
+  display: flex; align-items: center; justify-content: center;
+  height: var(--btn-height); width: 100%;
+  border-radius: var(--btn-radius);
+  font-weight: 700; font-size: var(--text-btn);
+  text-decoration: none; transition: all .2s;
+  border: 1.5px solid transparent;
+}
+.btn-plan-primary { background: var(--yellow); color: var(--black); }
+.btn-plan-primary:hover { background: #ffd040; }
+.btn-plan-outline { border-color: #555; color: var(--white); }
+.btn-plan-outline:hover { border-color: var(--yellow); color: var(--yellow); }
+.workers-free-note {
+  text-align: center; margin-top: 28px;
+  font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted);
+  letter-spacing: .5px;
+}
+.workers-free-note em { color: var(--yellow); font-style: normal; font-weight: 700; }
+
+/* ─── SIGNUP ────────────────────────────────────── */
+.signup { background: var(--yellow); }
+.signup .sec-label { color: rgba(0,0,0,.4); }
+.signup h2 { color: var(--black); }
+.signup .lead { color: rgba(0,0,0,.6); }
+.signup-form {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 40px; max-width: 560px;
+}
+.signup-form input[type="email"] {
+  flex: 1; min-width: 240px;
+  height: var(--btn-height); padding: 0 22px;
+  border-radius: var(--btn-radius);
+  font-family: 'Barlow', sans-serif; font-size: var(--text-btn);
+  border: 2px solid transparent;
+  background: rgba(0,0,0,.12); color: var(--black); outline: none;
+  transition: border-color .2s;
+}
+.signup-form input::placeholder { color: rgba(0,0,0,.35); }
+.signup-form input:focus { border-color: var(--black); }
+.signup-form button {
+  height: var(--btn-height); padding: 0 32px;
+  border-radius: var(--btn-radius);
+  font-family: 'Barlow', sans-serif; font-weight: 700; font-size: var(--text-btn);
+  background: var(--black); color: var(--yellow);
+  border: none; cursor: pointer; transition: background .2s; white-space: nowrap;
+}
+.signup-form button:hover { background: #1a1a1a; }
+.signup-smallprint { font-size: 13px; color: rgba(0,0,0,.45); margin-top: 14px; }
+
+/* ─── DIVIDER BAR ───────────────────────────────── */
+.divider { height: 4px; background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+
+/* ─── FOOTER ────────────────────────────────────── */
+footer {
+  background: #060606; padding: 48px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 24px;
+  border-top: 1px solid #181818;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 3px; color: var(--yellow);
+}
+.footer-tagline { font-size: 13px; color: #555; margin-top: 4px; }
+.footer-meta { font-size: 12px; color: #404040; text-align: right; line-height: 1.7; }
+
+/* ─── RESPONSIVE ────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 14px 20px; }
+  .nav-cta { min-width: 160px; font-size: 17px; padding: 0 20px; }
+  section { padding: 70px 20px; }
+  .hero { padding: 60px 20px 52px; }
+  .prob-grid, .story-grid, .steps-row,
+  .levels-grid, .pricing-grid { grid-template-columns: 1fr; }
+  .stat-strip { gap: 30px; }
+  .data-bar { flex-direction: column; }
+  .data-cell { border-right: none; border-bottom: 1px solid var(--border); }
+  footer { flex-direction: column; align-items: flex-start; }
+  .footer-meta { text-align: left; }
+  .roi-block { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">GIZA<span>LOOK</span></div>
+  <a href="#signup" class="nav-cta">Get early access</a>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    EVERY OTHER APP SHOWS THE WORKER THE DRAWING &nbsp;·&nbsp; WE TELL THEM WHAT TO DO WITH IT &nbsp;·&nbsp; EVERY OTHER APP SHOWS THE WORKER THE DRAWING &nbsp;·&nbsp; WE TELL THEM WHAT TO DO WITH IT &nbsp;·&nbsp; EVERY OTHER APP SHOWS THE WORKER THE DRAWING &nbsp;·&nbsp; WE TELL THEM WHAT TO DO WITH IT &nbsp;·&nbsp;
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="eyebrow">Civil construction field intelligence — built in Brisbane</div>
+  <h1>Plans in your pocket.<br><em>Always current.</em><br>Always clear.</h1>
+  <p class="hero-sub">Engineering drawings converted into plain-language steps — adapted to your crew's experience level, with supervisor updates pushed to their phone the second you send them.</p>
+  <div class="cta-row">
+    <a href="#signup" class="btn-primary">Get early access →</a>
+    <a href="#how-it-works" class="btn-ghost">See how it works</a>
+  </div>
+  <div class="stat-strip">
+    <div class="stat-item">
+      <div class="stat-num">$210K+</div>
+      <div class="stat-desc">Three reworks. One civil crew.<br>One year. Same root cause.</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10–12%</div>
+      <div class="stat-desc">Avg rework cost as % of<br>contract value in AU civil</div>
+      <div class="stat-source">Prof. Peter Love, Edith Cowan University — national survey of 260 AU/NZ projects</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">ZERO</div>
+      <div class="stat-desc">Other apps that interpret<br>drawings for the worker</div>
+      <div class="stat-source">Independent market research — 30+ platforms reviewed May 2026</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- REAL DATA NUMBERS -->
+<div class="data-bar">
+  <div class="data-cell">
+    <div class="data-num">28%</div>
+    <div class="data-label">Rework slashes contractor profit</div>
+    <div class="data-detail">A longitudinal study of 346 Australian construction projects found mean yearly profit reduced by 28% due to rework events — in an industry where margins rarely exceed 3%.</div>
+    <div class="data-cite">Love et al., Bond University — <a href="https://research.bond.edu.au" target="_blank">research.bond.edu.au</a> · 19,605 rework events, 2009–2015</div>
+  </div>
+  <div class="data-cell">
+    <div class="data-num">48%</div>
+    <div class="data-label">Of rework is caused by bad communication and wrong information</div>
+    <div class="data-detail">26% from poor communication between team members. 22% from incorrect or inaccessible project information. Workers not getting the right drawing details at the right time is the core problem.</div>
+    <div class="data-cite">PlanGrid / FMI — <em>Construction Disconnected</em> report · Survey of 600 construction leaders · <a href="https://www.autodesk.com/blogs/construction/survey-plangrid-fmi/" target="_blank">autodesk.com</a> · 2018</div>
+  </div>
+  <div class="data-cell">
+    <div class="data-num">45</div>
+    <div class="data-label">Construction workers died on the job in Australia in 2023</div>
+    <div class="data-detail">36% above the five-year average. Construction is consistently one of the six most dangerous industries in the country. Unclear instructions at the wrong moment contribute to that number.</div>
+    <div class="data-cite">Safe Work Australia — <em>Key WHS Statistics 2024</em> · <a href="https://www.safeworkaustralia.gov.au" target="_blank">safeworkaustralia.gov.au</a></div>
+  </div>
+  <div class="data-cell">
+    <div class="data-num">66%</div>
+    <div class="data-label">Rise in construction insolvencies 2022→2023</div>
+    <div class="data-detail">1,793 insolvencies in 2022. 2,546 in 2023. Margins are already razor-thin. A single $200K rework can end a small subcontractor. Rework prevention isn't a nice-to-have — it's survival.</div>
+    <div class="data-cite">ASIC via BDO — <em>Construction Survey 2024</em> · <a href="https://www.bdo.com.au" target="_blank">bdo.com.au</a></div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="problem">
+  <div class="sec-label">The problem</div>
+  <h2>Every other app<br>solves the wrong problem.</h2>
+  <p class="lead">They put the drawing on the phone. But nobody interpreted it. Nobody asked whether the bloke holding the phone actually understood what it was telling him to do.</p>
+  <div class="prob-grid">
+    <div class="prob-item">
+      <div class="prob-icon">📄</div>
+      <h3>The plans are on a muddy A3</h3>
+      <p>Left in the ute. Rained on. Passed around. The crew ends up working off memory — or off the last job they did that "looked similar." Yeah nah, that's not good enough.</p>
+    </div>
+    <div class="prob-item">
+      <div class="prob-icon">🔍</div>
+      <h3>Apprentices can't read drawings under pressure</h3>
+      <p>A first-year shouldn't have to decode invert levels and pipe gradients while the excavator's idling at $180 an hour. But that's exactly what we ask them to do. Every. Single. Day.</p>
+    </div>
+    <div class="prob-item">
+      <div class="prob-icon">📞</div>
+      <h3>Supers get called 15 times a day</h3>
+      <p>"What's the cover depth?" "Is this HDPE or PVC?" Questions the drawing already answers — for workers who know how to read it. Most first and second years don't. Not yet.</p>
+    </div>
+    <div class="prob-item">
+      <div class="prob-icon">🔄</div>
+      <h3>Revisions never make it to the crew in time</h3>
+      <p>Engineer drops Rev B at 9am. Project manager gets it at 10. The crew finds out at 3pm — after they've laid 40 metres in the wrong alignment. We've all been there.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THREE COST STORIES -->
+<section class="stories" id="stories">
+  <div class="sec-label">Real jobs. Real reworks. Real costs.</div>
+  <h2>Three incidents.<br>$210,000 later.</h2>
+  <p class="lead">Every one of these came back to the same root cause. The drawing had the answer. Nobody surfaced it in time. That's the problem Gizalook fixes.</p>
+
+  <div class="story-grid">
+    <div class="story-card">
+      <div class="story-cost">$200K</div>
+      <div class="story-tag">Story 01 — Wrong cover depth</div>
+      <div class="story-what">100 metres of 300mm HDPE water main at the wrong cover depth</div>
+      <p class="story-detail">The cross section on the plans clearly showed a different depth. The crew was moving fast. Nobody checked it against the drawing on the day. The pipe came back out. All 100 metres of it. Bloody oath.</p>
+      <div class="story-fix">
+        <div class="story-fix-label">With Gizalook</div>
+        <p>Cover depth shows up as a Critical Number on every pipe-laying step — 24pt bold, can't miss it. The worker sees it before the bucket goes in the ground. Not after they've backfilled.</p>
+      </div>
+    </div>
+    <div class="story-card">
+      <div class="story-cost">FULL<br>REWORK</div>
+      <div class="story-tag">Story 02 — Wrong pipe material</div>
+      <div class="story-what">Sewer connection installed in PVC. Plans stated HDPE. One word. One rework.</div>
+      <p class="story-detail">That's the difference — one word on one drawing. Easy to miss when you're working off a sun-bleached A3 or going off what you used last job. Full rework. Double the labour, double the materials. No dramas, right? Wrong.</p>
+      <div class="story-fix">
+        <div class="story-fix-label">With Gizalook</div>
+        <p>Material spec is called out in plain language at the relevant step. Not buried in a note — front and centre before the pipe goes in. "HDPE — not PVC. Good as gold? Tick it off."</p>
+      </div>
+    </div>
+    <div class="story-card">
+      <div class="story-cost">$10K</div>
+      <div class="story-tag">Story 03 — Wrong height</div>
+      <div class="story-what">Fire hydrant installed too short. One detail. One measurement. Missed.</div>
+      <p class="story-detail">Height and finish level. Two numbers. Neither confirmed on the day. The hydrant came out, went back in at the right height. $10,000 for a mistake that took five seconds to make and two days to fix.</p>
+      <div class="story-fix">
+        <div class="story-fix-label">With Gizalook</div>
+        <p>Height and finish level are checklist items the worker ticks off before moving on. The step doesn't close until it's confirmed. Sweet as — then they proceed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="roi-block">
+    <div>
+      <div class="roi-text">Annual Gizalook subscription for a crew of 10: <em>under $7,000</em></div>
+      <div class="roi-sub">Those three incidents cost 30× that. The ROI conversation sells itself.</div>
+    </div>
+    <a href="#pricing" class="btn-primary">See pricing →</a>
+  </div>
+</section>
+
+<!-- REAL DATA CARDS -->
+<section class="real-data">
+  <div class="sec-label">The numbers don't lie</div>
+  <h2>Don't take our word for it.<br>Take theirs.</h2>
+  <p class="lead">Every number on this page comes from a published study, a government report, or an officially cited industry body. No made-up stats. No creative maths.</p>
+
+  <div class="data-cards">
+    <div class="data-card">
+      <div class="data-card-num">6.4%</div>
+      <div class="data-card-label">Mean direct rework cost — Australian construction</div>
+      <p class="data-card-detail">National survey of 161 Australian construction professionals across building and civil projects. Direct rework cost averaged 6.4% of contract value. Indirect costs added another 5.9%. On a $5M civil job, that's $320,000 walking out the door.</p>
+      <div class="data-card-source">Love & Edwards — <em>Civil Engineering and Environmental Systems</em>, Vol 22 No 1 · Edith Cowan University · <a href="https://ro.ecu.edu.au/ecuworks/2401/" target="_blank">ro.ecu.edu.au</a></div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-num">10–12%</div>
+      <div class="data-card-label">Rework on civil and building projects — larger AU/NZ study</div>
+      <p class="data-card-detail">A 2009 study of 260 AU/NZ building and civil projects found rework averaged 10–12% of project value — double the earlier 2005 figure. Civil engineering projects tracked higher than building projects.</p>
+      <div class="data-card-source">Love, Prof. Peter E.D. — Edith Cowan University · <a href="https://www.linkedin.com/pulse/how-much-construction-rework-costing-you-john-morrison" target="_blank">Via LinkedIn Industry Analysis · 2018</a></div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-num">$375M</div>
+      <div class="data-card-label">Sydney water infrastructure project — $1M in rework management costs</div>
+      <p class="data-card-detail">A $375M Sydney-based water infrastructure alliance was running three weeks behind schedule due to rework. About $1M in manager and supervisor time had been spent managing rework alone before the team specifically targeted it.</p>
+      <div class="data-card-source">CQI / IRCA — Seán Connolly, Laing O'Rourke · <a href="https://www.quality.org/knowledge/cost-rework-0" target="_blank">quality.org</a></div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-num">37</div>
+      <div class="data-card-label">Construction fatalities in Australia — 2024</div>
+      <p class="data-card-detail">Construction was the third deadliest industry in Australia in 2024. 37 workers killed — 20% of all worker fatalities in the country. Unclear work instructions at the moment of execution are a documented contributing factor in construction incidents.</p>
+      <div class="data-card-source">Safe Work Australia — <em>Key WHS Statistics 2025</em> · <a href="https://data.safeworkaustralia.gov.au" target="_blank">data.safeworkaustralia.gov.au</a></div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-num">48%</div>
+      <div class="data-card-label">Of all rework caused by communication failures and wrong information</div>
+      <p class="data-card-detail">Survey of 600 construction leaders globally. 26% of rework traced to poor communication. 22% to incorrect or inaccessible project data. The drawing exists. It just doesn't reach the worker in the right form at the right moment.</p>
+      <div class="data-card-source">PlanGrid / FMI — <em>Construction Disconnected</em> · <a href="https://www.autodesk.com/blogs/construction/survey-plangrid-fmi/" target="_blank">autodesk.com</a> · 2018</div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-num">$318B</div>
+      <div class="data-card-label">Australian construction industry output — 2024</div>
+      <p class="data-card-detail">At 10% average rework cost, that's over $30 billion leaving the industry each year in avoidable mistakes. At the subcontractor level, a single six-figure rework can wipe out an entire year's profit for a small civil crew.</p>
+      <div class="data-card-source">RLB / The Urban Developer · <a href="https://www.theurbandeveloper.com/articles/australia-s-construction-sector-hits-aud318bn-as-cost-pressures-re-emerge-rlb" target="_blank">theurbandeveloper.com</a> · March 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how-it-works">
+  <div class="sec-label">How it works</div>
+  <h2>Three steps.<br>That's the whole thing.</h2>
+  <p class="lead">No training courses. No 90-day onboarding. If you can upload a PDF, you can use Gizalook. Workers are reading steps on their first day — and they set it up in under two minutes.</p>
+
+  <div class="steps-row">
+    <div class="step">
+      <div class="step-icon">📤</div>
+      <h3>Upload the drawing</h3>
+      <p>You upload the PDF. Pick the experience level for your crew — first-year through to senior. Hit Generate. Gizalook reads the drawing and creates plain-language steps, Critical Numbers, material specs, and hold points. Takes about 60 seconds.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">✅</div>
+      <h3>Review and publish</h3>
+      <p>You review the steps before they go live — add a field note if anything needs a tweak. Hit Publish. Every assigned worker gets the steps on their phone instantly. One drawing. Whole crew. Same understanding. Good as gold.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">📱</div>
+      <h3>Crew works through it on site</h3>
+      <p>Big text. Plain language. One step at a time. Tick it off, move on. VERIFY flags show in orange — "Oi — check this with your super before you go further." Stop Work = full-screen block. You see their progress in real time. Plans change? Push a field note. Done.</p>
+    </div>
+  </div>
+
+  <!-- Worker onboarding flow -->
+  <div style="margin-top: 64px;">
+    <div class="sec-label">Worker setup — zero friction</div>
+    <h2 style="font-size: clamp(36px, 4vw, 56px);">Workers are ready before<br>they open the app.</h2>
+    <p class="lead" style="margin-bottom: 40px;">You set everything up. They just tap in a code once, set up Face ID, and they're on the job. No email required. No password. No fussing around.</p>
+    <div class="onboarding-flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text"><strong>You add your worker</strong>Enter their name, job title, experience level, and mobile number. That's it — profile's done.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text"><strong>They get an SMS</strong>A one-time PIN lands on their phone. No app store required for this part.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text"><strong>First login — PIN in, Face ID set</strong>They enter the PIN once. Set up Face ID. That's their login forever. No passwords.</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-text"><strong>Everything's already there</strong>Their job, their steps, their experience level — all pre-loaded by you. Zero setup friction on their end.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE LEVELS -->
+<section class="levels">
+  <div class="sec-label">Adapts to your crew</div>
+  <h2>Same drawing.<br>Different crew? No worries.</h2>
+  <p class="lead">A first-year apprentice and a 10-year leading hand don't need the same level of detail. Gizalook reads the same drawing differently depending on who's holding the phone.</p>
+  <div class="levels-grid">
+    <div class="level-card">
+      <div class="level-badge">Year 1–2</div>
+      <h3>The Apprentice</h3>
+      <p>Full knowledge layer. Every abbreviation explained. Every step with context. Learns while working — builds plan literacy on the job, not instead of it. Stoked to actually understand what they're doing.</p>
+    </div>
+    <div class="level-card">
+      <div class="level-badge">Year 3–4</div>
+      <h3>Getting There</h3>
+      <p>Clear instructions, key context. Dimensions and materials front and centre. Anything ambiguous flagged for a check. Gets it done right without the noise.</p>
+    </div>
+    <div class="level-card">
+      <div class="level-badge">Qualified</div>
+      <h3>The Tradesman</h3>
+      <p>Condensed view. Key steps and critical tolerances. Enough detail to nail it, not so much it slows you down. Confirms what you already know, flags what's different on this job.</p>
+    </div>
+    <div class="level-card">
+      <div class="level-badge">Senior / Leading Hand</div>
+      <h3>The Boss on the Shovel</h3>
+      <p>Exception-based. Only what's unusual on this drawing. Flags, deviations, hold points. Everything non-standard surfaces automatically. She'll be right — but when she won't be, you'll know.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="sec-label">Pricing — no surprises</div>
+  <h2>Priced for civil<br>subcontractors.</h2>
+  <p class="lead">Workers are always free. No per-seat pricing for the crew. You pay per supervisor. That's it.</p>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">Free</div>
+      <div class="plan-note">Forever. No credit card. No catch.</div>
+      <ul class="plan-features">
+        <li>1 drawing upload — free forever</li>
+        <li>Unlimited workers on that drawing</li>
+        <li>Full AI step generation</li>
+        <li>Step checklist on workers' phones</li>
+        <li>VERIFY flag + Stop Work alerts</li>
+        <li class="off">More than 1 drawing</li>
+        <li class="off">Multiple active jobs</li>
+        <li class="off">Deviation log</li>
+      </ul>
+      <a href="#signup" class="btn-plan btn-plan-outline">Start free →</a>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="featured-badge">Most popular</div>
+      <div class="plan-name">Professional</div>
+      <div class="plan-price"><sup>AUD</sup>59<sub>/mo</sub></div>
+      <div class="plan-note">Per supervisor. Workers are always free.</div>
+      <ul class="plan-features">
+        <li>Unlimited drawings and jobs</li>
+        <li>Full AI drawing interpretation</li>
+        <li>Experience-level adaptation</li>
+        <li>Field notes tied to steps</li>
+        <li>Supervisor progress dashboard</li>
+        <li>Deviation log + engineer flag</li>
+        <li>PO request workflow</li>
+        <li>Workers are free ✓</li>
+      </ul>
+      <a href="#signup" class="btn-plan btn-plan-primary">Get early access →</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price"><sup>AUD</sup>99<sub>/mo</sub></div>
+      <div class="plan-note">Per supervisor. Workers are always free.</div>
+      <ul class="plan-features">
+        <li>Everything in Professional</li>
+        <li>Company methodology library</li>
+        <li>Supervisor analytics dashboard</li>
+        <li>Role-based access control</li>
+        <li>Xero / MYOB integration</li>
+        <li>Priority support</li>
+        <li>SOC2 security</li>
+        <li>Workers are free ✓</li>
+      </ul>
+      <a href="#signup" class="btn-plan btn-plan-outline">Contact us →</a>
+    </div>
+  </div>
+
+  <p class="workers-free-note">
+    Workers are free on every plan. <em>Always.</em> If it costs too much to put it in their hands, it won't get used.
+  </p>
+</section>
+
+<!-- SIGNUP -->
+<section class="signup" id="signup">
+  <div class="sec-label">Early access</div>
+  <h2>Be the first<br>crew to get it.</h2>
+  <p class="lead">Gizalook is in final build. Early access opens to Australian civil subcontractors first. Get on the list — we'll reach out before we open to anyone else.</p>
+  <form class="signup-form" onsubmit="handleSignup(event)">
+    <input type="email" placeholder="your@email.com.au" required>
+    <button type="submit">Get early access</button>
+  </form>
+  <p class="signup-smallprint">No spam. No sales calls. One email when early access opens. That's it.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">GIZALOOK</div>
+    <div class="footer-tagline">"Every other app shows the worker the drawing. We tell them what to do with it."</div>
+  </div>
+  <div class="footer-meta">
+    Built in Brisbane, QLD &nbsp;·&nbsp; For civil subcontractors AU + NZ<br>
+    © 2026 Gizalook &nbsp;·&nbsp; Trademark pending AU + NZ<br>
+    AI-generated guidance only. Always verify critical dimensions with your supervisor before proceeding.
+  </div>
+</footer>
+
+<script>
+// ── Gizalook early access signup ──────────────────────────────────
+// Calls the capture-signup Supabase Edge Function.
+// Replace SUPABASE_PROJECT_REF with your actual project reference.
+// Found in Supabase dashboard → Settings → General → Reference ID
+const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const form  = e.target;
+  const email = form.querySelector('input[type="email"]').value.trim();
+  const btn   = form.querySelector('button');
+
+  if (!email) return;
+
+  // Optimistic UI
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/capture-signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ email, source: 'landing_page' }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+      // Show inline error
+      let errEl = form.querySelector('.signup-error');
+      if (!errEl) {
+        errEl = document.createElement('p');
+        errEl.className = 'signup-error';
+        errEl.style.cssText = 'color:rgba(0,0,0,0.6);font-size:14px;margin-top:10px;';
+        form.appendChild(errEl);
+      }
+      errEl.textContent = data.error || 'That didn\'t work — try again mate.';
+      return;
+    }
+
+    // Success
+    btn.textContent = 'Sweet as — you\'re on the list 🤙';
+    btn.style.background = '#1a1a1a';
+    form.querySelector('input').value = '';
+    form.querySelector('input').disabled = true;
+    // Remove any previous error
+    form.querySelector('.signup-error')?.remove();
+
+  } catch (err) {
+    btn.textContent = 'Try again';
+    btn.disabled = false;
+    console.error('Signup error:', err);
+  }
+}
+</script>
+</body>
+</html>
