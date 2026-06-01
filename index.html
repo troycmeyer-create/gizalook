@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,43 +85,70 @@ nav {
 }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-/* ─── HERO ─────────────────────────────────────── */
+/* ─── HERO (photo background) ───────────────────── */
 .hero {
-  min-height: 90vh;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 80px 40px 64px;
-  position: relative; overflow: hidden;
+  position: relative;
+  min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
 }
-.hero::before {
-  content: '';
+.hero-bg-img {
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse 55% 45% at 75% 35%, rgba(245,197,52,.06) 0%, transparent 70%);
-  pointer-events: none;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+/* Transparent at top (site visible), heavy black at bottom (text readable) */
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.97) 0%,
+    rgba(0,0,0,0.82) 28%,
+    rgba(0,0,0,0.45) 55%,
+    rgba(0,0,0,0.12) 100%
+  );
+}
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 0 48px 72px;
+  max-width: 900px;
 }
 .eyebrow {
   font-family: 'DM Mono', monospace;
-  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--yellow); margin-bottom: 20px;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(245,197,52,0.65); margin-bottom: 20px; display: block;
 }
 h1 {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(70px, 10.5vw, 148px);
-  line-height: .92; letter-spacing: 2px;
-  max-width: 880px; margin-bottom: 28px;
+  font-size: clamp(52px, 8.5vw, 112px);
+  line-height: .93; letter-spacing: 2px;
+  max-width: 880px; margin-bottom: 24px;
+  text-shadow: 0 2px 32px rgba(0,0,0,0.4);
 }
 h1 em { font-style: normal; color: var(--yellow); }
 .hero-sub {
-  font-size: 20px; color: var(--concrete);
-  max-width: 560px; margin-bottom: 44px; line-height: 1.6;
+  font-size: clamp(17px, 2vw, 22px);
+  color: rgba(244,239,229,0.72);
+  max-width: 580px; margin-bottom: 12px; line-height: 1.55;
+  font-weight: 400;
+}
+.hero-pivot {
+  display: block;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 700; color: var(--yellow);
+  margin-bottom: 40px;
 }
 .cta-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
 .btn-primary {
   display: inline-flex; align-items: center; justify-content: center;
-  height: var(--btn-height); min-width: 240px; padding: 0 36px;
+  height: var(--btn-height); padding: 0 36px;
   background: var(--yellow); color: var(--black);
-  font-weight: 700; font-size: var(--text-btn);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 2px;
   text-decoration: none; border-radius: var(--btn-radius);
   transition: background .2s, transform .15s;
+  white-space: nowrap;
 }
 .btn-primary:hover { background: #ffd040; transform: translateY(-2px); }
 .btn-ghost {
@@ -131,11 +159,12 @@ h1 em { font-style: normal; color: var(--yellow); }
 }
 .btn-ghost:hover { border-color: var(--yellow); color: var(--yellow); }
 
-/* Hero stat strip */
+/* Stat strip — now lives below the gallery, not inside the hero */
 .stat-strip {
   display: flex; gap: 56px; flex-wrap: wrap;
-  margin-top: 72px; padding-top: 40px;
+  padding: 40px 48px;
   border-top: 1px solid var(--border);
+  background: var(--black);
 }
 .stat-item {}
 .stat-num {
@@ -145,9 +174,63 @@ h1 em { font-style: normal; color: var(--yellow); }
 .stat-desc { font-size: 14px; color: var(--muted); margin-top: 5px; }
 .stat-source {
   font-family: 'DM Mono', monospace;
-  font-size: 10px; color: #444; margin-top: 3px;
-  letter-spacing: .5px;
+  font-size: 10px; color: #444; margin-top: 3px; letter-spacing: .5px;
 }
+
+/* ─── GALLERY — Sound familiar? ─────────────────── */
+.gallery-section {
+  background: var(--black);
+  padding: 96px 48px;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin-top: 52px;
+}
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--card);
+}
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+  filter: saturate(0.82) contrast(1.04);
+  transition: filter .3s, transform .4s;
+}
+.gallery-item:hover img {
+  filter: saturate(1) contrast(1);
+  transform: scale(1.03);
+}
+.gallery-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 40px 20px 18px;
+  background: linear-gradient(to top, rgba(0,0,0,.92) 0%, transparent 100%);
+}
+.gallery-caption-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(245,197,52,.6); margin-bottom: 5px; display: block;
+}
+.gallery-caption-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; letter-spacing: 1px;
+  color: var(--white); line-height: 1.1;
+  text-shadow: 0 1px 10px rgba(0,0,0,.7);
+}
+.gallery-payoff {
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 700; color: var(--white);
+  text-align: center;
+  padding: 32px 24px;
+  border: 1px solid var(--border);
+  border-top: none;
+  line-height: 1.45;
+}
+.gallery-payoff em { color: var(--yellow); font-style: normal; }
 
 /* ─── SECTIONS ─────────────────────────────────── */
 section { padding: 96px 40px; }
@@ -489,10 +572,13 @@ footer {
   nav { padding: 14px 20px; }
   .nav-cta { min-width: 160px; font-size: 17px; padding: 0 20px; }
   section { padding: 70px 20px; }
-  .hero { padding: 60px 20px 52px; }
+  .hero-content { padding: 0 24px 52px; }
   .prob-grid, .story-grid, .steps-row,
   .levels-grid, .pricing-grid { grid-template-columns: 1fr; }
-  .stat-strip { gap: 30px; }
+  .stat-strip { gap: 30px; padding: 32px 20px; }
+  .gallery-section { padding: 64px 20px; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-item { aspect-ratio: 4 / 3; }
   .data-bar { flex-direction: column; }
   .data-cell { border-right: none; border-bottom: 1px solid var(--border); }
   footer { flex-direction: column; align-items: flex-start; }
@@ -516,31 +602,104 @@ footer {
   </div>
 </div>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="eyebrow">Civil construction field intelligence — built in Brisbane</div>
-  <h1>Plans in your pocket.<br><em>Always current.</em><br>Always clear.</h1>
-  <p class="hero-sub">Engineering drawings converted into plain-language steps — adapted to your crew's experience level, with supervisor updates pushed to their phone the second you send them.</p>
-  <div class="cta-row">
-    <a href="#signup" class="btn-primary">Get early access →</a>
-    <a href="#how-it-works" class="btn-ghost">See how it works</a>
-  </div>
-  <div class="stat-strip">
-    <div class="stat-item">
-      <div class="stat-num">$210K+</div>
-      <div class="stat-desc">Three reworks. One civil crew.<br>One year. Same root cause.</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">10–12%</div>
-      <div class="stat-desc">Avg rework cost as % of<br>contract value in AU civil</div>
-      <div class="stat-source">Prof. Peter Love, Edith Cowan University — national survey of 260 AU/NZ projects</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">ZERO</div>
-      <div class="stat-desc">Other apps that interpret<br>drawings for the worker</div>
-      <div class="stat-source">Independent market research — 30+ platforms reviewed May 2026</div>
+<!-- HERO — photo background -->
+<section class="hero" id="home">
+
+  <!-- Real site photo: plans on Isuzu ute dash, active construction site behind -->
+  <img
+    class="hero-bg-img"
+    src="https://troycmeyer-create.github.io/gizalook/site_photo_1_dashboard.jpg"
+    alt="Engineering drawing crumpled on the dashboard of an Isuzu work ute on an active civil construction site, Brisbane"
+    loading="eager"
+    fetchpriority="high"
+  >
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <span class="eyebrow">Real photo. Real ute. Active civil site, Brisbane.</span>
+    <h1>This is how most civil sites<br>manage their drawings<br>right now.</h1>
+    <p class="hero-sub">Scrunched. Rained on. Trodden on. Lost in the ute.<br>Then someone builds from them anyway.</p>
+    <span class="hero-pivot">There's a better way.</span>
+    <div class="cta-row">
+      <a href="#signup" class="btn-primary">Giz a look →</a>
+      <a href="#how-it-works" class="btn-ghost">See how it works</a>
     </div>
   </div>
+
+</section>
+
+<!-- STAT STRIP — pulled out of hero, sits below as its own band -->
+<div class="stat-strip">
+  <div class="stat-item">
+    <div class="stat-num">$210K+</div>
+    <div class="stat-desc">Three reworks. One civil crew.<br>One year. Same root cause.</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">10–12%</div>
+    <div class="stat-desc">Avg rework cost as % of<br>contract value in AU civil</div>
+    <div class="stat-source">Prof. Peter Love, Edith Cowan University — national survey of 260 AU/NZ projects</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">ZERO</div>
+    <div class="stat-desc">Other apps that interpret<br>drawings for the worker</div>
+    <div class="stat-source">Independent market research — 30+ platforms reviewed May 2026</div>
+  </div>
+</div>
+
+<!-- GALLERY — Sound familiar? -->
+<section class="gallery-section">
+
+  <span class="sec-label">Sound familiar?</span>
+  <h2>Sound<br>familiar?</h2>
+
+  <div class="gallery-grid">
+
+    <!-- Photo 1: glovebox stuffed — "The site filing system" -->
+    <div class="gallery-item">
+      <img
+        src="https://troycmeyer-create.github.io/gizalook/site_photo_5_glovebox_stuffed.jpg"
+        alt="Ute glovebox overflowing with crumpled engineering drawings and plans"
+        loading="lazy"
+      >
+      <div class="gallery-caption">
+        <span class="gallery-caption-tag">Photo 1 of 3</span>
+        <div class="gallery-caption-text">The site filing system</div>
+      </div>
+    </div>
+
+    <!-- Photo 2: boots near floor — "The backup copy" -->
+    <div class="gallery-item">
+      <img
+        src="https://troycmeyer-create.github.io/gizalook/site_photo_6_floor_boots.jpg"
+        alt="Work boots beside engineering drawings on the floor of a work ute"
+        loading="lazy"
+      >
+      <div class="gallery-caption">
+        <span class="gallery-caption-tag">Photo 2 of 3</span>
+        <div class="gallery-caption-text">The backup copy</div>
+      </div>
+    </div>
+
+    <!-- Photo 3: scrunched plans — "The version that got rained on" -->
+    <div class="gallery-item">
+      <img
+        src="https://troycmeyer-create.github.io/gizalook/site_photo_4_scrunched.jpg"
+        alt="Multiple engineering drawings scrunched up between the seat and centre console of a work ute"
+        loading="lazy"
+      >
+      <div class="gallery-caption">
+        <span class="gallery-caption-tag">Photo 3 of 3</span>
+        <div class="gallery-caption-text">The version that got rained on</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Payoff line -->
+  <div class="gallery-payoff">
+    Every one of these drawings is someone's instruction manual for a <em>$2M job.</em>
+  </div>
+
 </section>
 
 <div class="divider"></div>
