@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>Gizalook</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body, #root { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .pulse { animation: pulse 1.4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+
+const { useState, useCallback, useRef } = React;
+
+const COLORS_LIGHT = {
+  bg: "#F5F3EF",
+  card: "#FFFFFF",
+  text: "#1A1A1A",
+  textSecondary: "#666666",
+  accent: "#FF6B35",
+  danger: "#D32F2F",
+  success: "#2E7D32",
+  border: "#D8D4CC",
+};
+
+const COLORS_DARK = {
+  bg: "#1A1A1A",
+  card: "#262626",
+  text: "#FFFFFF",
+  textSecondary: "#E0E0E0",
+  accent: "#FF6B35",
+  danger: "#EF5350",
+  success: "#66BB6A",
+  border: "#3A3A3A",
+};
+
+const EXPERIENCE_LEVELS = ["First year", "Third year", "Leading hand", "Supervisor"];
+
+const SYSTEM_PROMPT_TEMPLATE = (level) =>
+`You are Gizalook, a construction field intelligence app. Read this engineering drawing and return ONLY valid JSON — no preamble, no markdown — in this exact structure: { drawingTitle: string, trade: string, steps: [{ number, instruction, criticalNumbers: [], materials: [], holdPoint: bool, verifyFlag: bool, verifyReason: string }], safetyFlags: [], relatedDrawings: [], confidence: HIGH|MEDIUM|LOW }. Write all instructions in plain English for a ${level} tradie — no jargon.`;
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function ThemeToggle({ dark, setDark, colors }) {
+  return (
+    <button
+      onClick={() => setDark(!dark)}
+      aria-label="Toggle dark mode"
+      style={{
+        width: 48,
+        height: 48,
+        borderRadius: 8,
+        border: `1px solid ${colors.border}`,
+        background: colors.card,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 22,
+        color: colors.text,
+        flexShrink: 0,
+      }}
+    >
+      {dark ? "☀️" : "🌙"}
+    </button>
+  );
+}
+
+function UploadScreen({ colors, dark, setDark, onRead, loading, error }) {
+  const [file, setFile] = useState(null);
+  const [level, setLevel] = useState("Third year");
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef(null);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f && f.type === "application/pdf") setFile(f);
+  }, []);
+
+  const handleFileChange = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f) setFile(f);
+  };
+
+  return (
+    <div style={{
+      minHeight: "100%",
+      background: colors.bg,
+      color: colors.text,
+      padding: "20px 16px 40px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 20,
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.5 }}>Gizalook</div>
+          <div style={{ fontSize: 15, color: colors.textSecondary, marginTop: 4 }}>
+            We tell you what to do with it.
+          </div>
+        </div>
+        <ThemeToggle dark={dark} setDark={setDark} colors={colors} />
+      </div>
+
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        onClick={() => inputRef.current && inputRef.current.click()}
+        style={{
+          flex: 1,
+          minHeight: 240,
+          border: `3px dashed ${dragOver ? colors.accent : colors.border}`,
+          borderRadius: 12,
+          background: dragOver ? (dark ? "#332016" : "#FFF1E8") : colors.card,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          padding: 24,
+          gap: 12,
+          transition: "background 0.15s, border-color 0.15s",
+        }}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+        />
+        <div style={{ fontSize: 48 }}>📄</div>
+        {file ? (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>{file.name}</div>
+            <div style={{ fontSize: 15, color: colors.textSecondary, marginTop: 6 }}>
+              Tap to choose a different file
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>Drop your PDF drawing here</div>
+            <div style={{ fontSize: 15, color: colors.textSecondary, marginTop: 6 }}>
+              or tap to browse
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>
+          Your experience level
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          {EXPERIENCE_LEVELS.map((lvl) => (
+            <button
+              key={lvl}
+              onClick={() => setLevel(lvl)}
+              style={{
+                minHeight: 64,
+                fontSize: 17,
+                fontWeight: 700,
+                borderRadius: 8,
+                border: `2px solid ${level === lvl ? colors.accent : colors.border}`,
+                background: level === lvl ? colors.accent : colors.card,
+                color: level === lvl ? "#FFFFFF" : colors.text,
+              }}
+            >
+              {lvl}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {error && (
+        <div style={{
+          padding: 14,
+          borderRadius: 12,
+          border: `2px solid ${colors.danger}`,
+          color: colors.danger,
+          fontSize: 16,
+          fontWeight: 600,
+          textAlign: "center",
+        }}>
+          {error}
+        </div>
+      )}
+
+      <button
+        disabled={!file || loading}
+        onClick={() => onRead(file, level)}
+        style={{
+          minHeight: 64,
+          borderRadius: 8,
+          border: "none",
+          background: !file || loading ? colors.border : colors.accent,
+          color: "#FFFFFF",
+          fontSize: 20,
+          fontWeight: 800,
+          letterSpacing: 0.3,
+          opacity: loading ? 0.85 : 1,
+        }}
+      >
+        {loading ? (
+          <span className="pulse">Reading your drawing…</span>
+        ) : (
+          "Read This Drawing"
+        )}
+      </button>
+    </div>
+  );
+}
+
+function ProgressBar({ steps, currentIndex, colors }) {
+  return (
+    <div style={{ display: "flex", gap: 4, padding: "0 16px" }}>
+      {steps.map((_, i) => {
+        const completed = i < currentIndex;
+        const current = i === currentIndex;
+        return (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              height: 8,
+              borderRadius: 4,
+              background: completed
+                ? colors.success
+                : current
+                ? colors.accent
+                : colors.border,
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {completed && (
+              <span style={{
+                position: "absolute",
+                top: -2,
+                fontSize: 10,
+                color: colors.success,
+              }}>✓</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function StepNavigator({ colors, dark, setDark, data, onReset }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [done, setDone] = useState(false);
+  const steps = data.steps || [];
+  const total = steps.length;
+  const step = steps[currentIndex];
+
+  const goNext = () => {
+    if (currentIndex === total - 1) {
+      setDone(true);
+    } else {
+      setCurrentIndex((i) => i + 1);
+    }
+  };
+
+  const goBack = () => {
+    if (done) {
+      setDone(false);
+      return;
+    }
+    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+  };
+
+  if (done) {
+    return (
+      <div style={{
+        minHeight: "100%",
+        background: colors.bg,
+        color: colors.text,
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 16px 0" }}>
+          <div style={{ fontSize: 22, fontWeight: 800 }}>Gizalook</div>
+          <ThemeToggle dark={dark} setDark={setDark} colors={colors} />
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24, padding: 24, textAlign: "center" }}>
+          <div style={{ fontSize: 64 }}>✅</div>
+          <div style={{ fontSize: 28, fontWeight: 800 }}>Drawing complete ✓</div>
+          <div style={{ fontSize: 17, color: colors.textSecondary }}>
+            All {total} steps for {data.drawingTitle || "this drawing"} are done.
+          </div>
+          <div style={{ width: "100%", maxWidth: 360 }}>
+            <ProgressBar steps={steps} currentIndex={total} colors={colors} />
+          </div>
+        </div>
+        <div style={{ padding: 16, display: "flex", gap: 12 }}>
+          <button
+            onClick={goBack}
+            style={{
+              flex: 1,
+              minHeight: 64,
+              borderRadius: 8,
+              border: `2px solid ${colors.border}`,
+              background: colors.card,
+              color: colors.text,
+              fontSize: 18,
+              fontWeight: 700,
+            }}
+          >
+            Back
+          </button>
+          <button
+            onClick={onReset}
+            style={{
+              flex: 1,
+              minHeight: 64,
+              borderRadius: 8,
+              border: "none",
+              background: colors.accent,
+              color: "#FFFFFF",
+              fontSize: 18,
+              fontWeight: 800,
+            }}
+          >
+            New Drawing
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!step) {
+    return (
+      <div style={{ minHeight: "100%", background: colors.bg, color: colors.text, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, textAlign: "center" }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>No steps were returned for this drawing.</div>
+          <button onClick={onReset} style={{ minHeight: 64, padding: "0 24px", borderRadius: 8, border: "none", background: colors.accent, color: "#FFFFFF", fontSize: 18, fontWeight: 800 }}>
+            Try another drawing
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      minHeight: "100%",
+      background: colors.bg,
+      color: colors.text,
+      display: "flex",
+      flexDirection: "column",
+    }}>
+      <div style={{ padding: "16px 16px 12px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <div style={{ overflow: "hidden" }}>
+            <div style={{ fontSize: 16, fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {data.drawingTitle || "Drawing"}
+            </div>
+            <div style={{ fontSize: 14, color: colors.textSecondary }}>
+              Step {currentIndex + 1} of {total}
+            </div>
+          </div>
+          <ThemeToggle dark={dark} setDark={setDark} colors={colors} />
+        </div>
+        <ProgressBar steps={steps} currentIndex={currentIndex} colors={colors} />
+      </div>
+
+      <div style={{ flex: 1, padding: "12px 16px", overflowY: "auto" }}>
+        <div style={{
+          background: colors.card,
+          border: `1px solid ${colors.border}`,
+          borderRadius: 12,
+          padding: 20,
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}>
+          {step.holdPoint && (
+            <div style={{
+              background: colors.danger,
+              color: "#FFFFFF",
+              borderRadius: 8,
+              padding: "10px 14px",
+              fontSize: 17,
+              fontWeight: 800,
+              textAlign: "center",
+              letterSpacing: 0.5,
+            }}>
+              ⛔ STOP — Hold Point
+            </div>
+          )}
+
+          {step.verifyFlag && (
+            <div style={{
+              background: dark ? "#3A2A12" : "#FFF1E0",
+              border: `2px solid ${colors.accent}`,
+              borderRadius: 8,
+              padding: "12px 14px",
+              fontSize: 16,
+              fontWeight: 700,
+              color: colors.accent,
+            }}>
+              ⚠️ VERIFY WITH SUPERVISOR
+              {step.verifyReason ? (
+                <div style={{ fontSize: 15, fontWeight: 500, marginTop: 4, color: colors.text }}>
+                  {step.verifyReason}
+                </div>
+              ) : null}
+            </div>
+          )}
+
+          <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.4 }}>
+            {step.instruction}
+          </div>
+
+          {Array.isArray(step.criticalNumbers) && step.criticalNumbers.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {step.criticalNumbers.map((num, i) => (
+                <div key={i} style={{
+                  background: colors.accent,
+                  color: "#FFFFFF",
+                  borderRadius: 8,
+                  padding: "8px 14px",
+                  fontSize: 18,
+                  fontWeight: 800,
+                }}>
+                  {String(num)}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {Array.isArray(step.materials) && step.materials.length > 0 && (
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: colors.textSecondary, marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                Materials
+              </div>
+              <ul style={{ paddingLeft: 20, fontSize: 16, lineHeight: 1.6 }}>
+                {step.materials.map((m, i) => <li key={i}>{m}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {currentIndex === 0 && (
+          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+            {Array.isArray(data.safetyFlags) && data.safetyFlags.length > 0 && (
+              <div style={{
+                border: `2px solid ${colors.danger}`,
+                borderRadius: 12,
+                padding: 14,
+              }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: colors.danger, marginBottom: 6, textTransform: "uppercase" }}>
+                  Safety Flags
+                </div>
+                <ul style={{ paddingLeft: 20, fontSize: 15, lineHeight: 1.6 }}>
+                  {data.safetyFlags.map((f, i) => <li key={i}>{f}</li>)}
+                </ul>
+              </div>
+            )}
+            {Array.isArray(data.relatedDrawings) && data.relatedDrawings.length > 0 && (
+              <div style={{
+                border: `1px solid ${colors.border}`,
+                borderRadius: 12,
+                padding: 14,
+              }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: colors.textSecondary, marginBottom: 6, textTransform: "uppercase" }}>
+                  Related Drawings
+                </div>
+                <div style={{ fontSize: 15, lineHeight: 1.6 }}>
+                  {data.relatedDrawings.join(", ")}
+                </div>
+              </div>
+            )}
+            {data.confidence && (
+              <div style={{ fontSize: 13, color: colors.textSecondary, textAlign: "center" }}>
+                Reading confidence: {data.confidence}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={{ padding: 16, display: "flex", gap: 12 }}>
+        <button
+          onClick={goBack}
+          disabled={currentIndex === 0}
+          style={{
+            flex: 1,
+            minHeight: 64,
+            borderRadius: 8,
+            border: `2px solid ${colors.border}`,
+            background: colors.card,
+            color: currentIndex === 0 ? colors.textSecondary : colors.text,
+            fontSize: 18,
+            fontWeight: 700,
+            opacity: currentIndex === 0 ? 0.5 : 1,
+          }}
+        >
+          Back
+        </button>
+        <button
+          onClick={goNext}
+          style={{
+            flex: 1,
+            minHeight: 64,
+            borderRadius: 8,
+            border: "none",
+            background: colors.accent,
+            color: "#FFFFFF",
+            fontSize: 18,
+            fontWeight: 800,
+          }}
+        >
+          {currentIndex === total - 1 ? "Done" : "Next"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [dark, setDark] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+  const colors = dark ? COLORS_DARK : COLORS_LIGHT;
+
+  const handleRead = async (file, level) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const base64 = await fileToBase64(file);
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+          "x-api-key": window.GIZALOOK_API_KEY || "",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 8192,
+          system: SYSTEM_PROMPT_TEMPLATE(level),
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "document",
+                  source: {
+                    type: "base64",
+                    media_type: "application/pdf",
+                    data: base64,
+                  },
+                },
+                {
+                  type: "text",
+                  text: "Read this engineering drawing and return the JSON described in the system prompt.",
+                },
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const textBlock = (result.content || []).find((b) => b.type === "text");
+      const rawText = textBlock ? textBlock.text : "";
+
+      let parsed;
+      try {
+        const cleaned = rawText.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
+        parsed = JSON.parse(cleaned);
+      } catch (parseErr) {
+        throw new Error("PARSE_FAILURE");
+      }
+
+      setData(parsed);
+    } catch (err) {
+      if (err.message === "PARSE_FAILURE") {
+        setError("Couldn't read this drawing — try a clearer scan.");
+      } else {
+        setError("Something went wrong reading this drawing. Check your connection and try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: colors.bg }}>
+      {data ? (
+        <StepNavigator
+          colors={colors}
+          dark={dark}
+          setDark={setDark}
+          data={data}
+          onReset={() => setData(null)}
+        />
+      ) : (
+        <UploadScreen
+          colors={colors}
+          dark={dark}
+          setDark={setDark}
+          onRead={handleRead}
+          loading={loading}
+          error={error}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
